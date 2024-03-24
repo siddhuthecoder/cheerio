@@ -36,7 +36,7 @@ const RegistrationForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/register', formData);
+      const response = await axios.post('http://localhost:4000/register', formData);
       toast.success(response.data.message);
       setFormData({ name: '', idNumber: '', rguktMail: '', photo: '' });
       setFile('');
