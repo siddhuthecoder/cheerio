@@ -3,7 +3,14 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Background from "./components/background";
-
+import { useRef } from 'react'
+import {app} from './firebase.js'
+import {
+  getDownloadURL,
+  getStorage,
+  ref as storageRef,
+  uploadBytesResumable,
+} from 'firebase/storage';
 const RegistrationForm = () => {
   const [error, setError] = useState("");
   const id = window.location.pathname.slice(1);
@@ -11,8 +18,8 @@ const RegistrationForm = () => {
   const [userStatus, setUserStatus] = useState("idle");
   const [userData, setUserData] = useState(null);
   const [userError, setUserError] = useState(null);
-  const [file, setFile] = useState("");
-
+  const [file , setFile] = useState(undefined)
+  console.log(file)
   useEffect(() => {
     if (id && userStatus === "idle") {
       setUserStatus("loaded");
@@ -33,33 +40,44 @@ const RegistrationForm = () => {
     }
   }, [id, userStatus]);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  
+ 
 
-    if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        setError("Image size must be less than 2MB");
-        return;
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const storage = getStorage(app);
+    const storageReference = storageRef(storage, `files/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageReference, file);
+
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        switch (snapshot.state) {
+          case 'paused':
+            console.log('Upload is paused');
+            break;
+          case 'running':
+            console.log('Upload is running');
+            break;
+          default:
+            break;
+        }
+      },
+      (error) => {
+        // Handle unsuccessful uploads
+        console.error("Error uploading file: ", error);
+      },
+      () => {
+        // Handle successful uploads on complete
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setFile(downloadURL);
+        });
       }
-      const acceptedImageTypes = ["image/jpeg", "image/png", "image/jpg"];
-      if (!acceptedImageTypes.includes(file.type)) {
-        setError("Only image files (JPEG, PNG, JPG) are allowed.");
-        return;
-      }
-      convertBase64(file).then((base64) => {
-        setFile(base64);
-      });
-    }
+    );
   };
 
-  const convertBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = () => resolve(fileReader.result);
-      fileReader.onerror = (error) => reject(error);
-    });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
