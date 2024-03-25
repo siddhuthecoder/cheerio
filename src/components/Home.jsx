@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { app } from "../firebase.js";
+import { useParams } from "react-router-dom";
 import {
   getDownloadURL,
   getStorage,
@@ -11,13 +12,12 @@ import {
 
 const Home = () => {
   const [error, setError] = useState("");
-  const id = window.location.pathname.slice(1);
+  const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [userStatus, setUserStatus] = useState("idle");
   const [userData, setUserData] = useState(null);
   const [userError, setUserError] = useState(null);
-  const [file, setFile] = useState(undefined);
-  console.log(file);
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     if (id && userStatus === "idle") {
@@ -25,7 +25,7 @@ const Home = () => {
       const fetchUser = async () => {
         try {
           const res = await axios.get(
-            `${import.meta.env.VITE_APP_BACKEND_URL}/getId/${id}`
+            `${process.env.REACT_APP_BACKEND_URL}/getId/${id}`
           );
           setUserData(res.data.user);
         } catch (error) {
@@ -82,7 +82,7 @@ const Home = () => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/register/${id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/register/${id}`,
         {
           photo: file,
         }

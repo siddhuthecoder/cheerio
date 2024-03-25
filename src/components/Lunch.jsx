@@ -15,7 +15,7 @@ const Lunch = () => {
       const fetchUser = async () => {
         try {
           const res = await axios.get(
-            `${import.meta.env.VITE_APP_BACKEND_URL}/getId/${id}`
+            `${process.env.REACT_APP_BACKEND_URL}/getId/${id}`
           );
           setUserData(res.data.user);
         } catch (error) {
@@ -33,9 +33,7 @@ const Lunch = () => {
     if (userData && !userData.isCompleted) {
       const postLunch = async () => {
         try {
-          await axios.post(
-            `${import.meta.env.VITE_APP_BACKEND_URL}/lunch/${id}`
-          );
+          await axios.post(`${process.env.REACT_APP_BACKEND_URL}/lunch/${id}`);
           toast.success("Lunch Status Updated");
         } catch (error) {
           toast.error(error?.response?.data.message || "Internal Server Error");
