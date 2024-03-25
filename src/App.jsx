@@ -3,14 +3,13 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Background from "./components/background";
-import { useRef } from 'react'
-import {app} from './firebase.js'
+import { app } from "./firebase.js";
 import {
   getDownloadURL,
   getStorage,
   ref as storageRef,
   uploadBytesResumable,
-} from 'firebase/storage';
+} from "firebase/storage";
 const RegistrationForm = () => {
   const [error, setError] = useState("");
   const id = window.location.pathname.slice(1);
@@ -18,8 +17,9 @@ const RegistrationForm = () => {
   const [userStatus, setUserStatus] = useState("idle");
   const [userData, setUserData] = useState(null);
   const [userError, setUserError] = useState(null);
-  const [file , setFile] = useState(undefined)
-  console.log(file)
+  const [file, setFile] = useState(undefined);
+  console.log(file);
+
   useEffect(() => {
     if (id && userStatus === "idle") {
       setUserStatus("loaded");
@@ -40,9 +40,6 @@ const RegistrationForm = () => {
     }
   }, [id, userStatus]);
 
-  
- 
-
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -50,16 +47,18 @@ const RegistrationForm = () => {
     const storageReference = storageRef(storage, `files/${file.name}`);
     const uploadTask = uploadBytesResumable(storageReference, file);
 
-    uploadTask.on('state_changed',
+    uploadTask.on(
+      "state_changed",
       (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log('Upload is ' + progress + '% done');
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload is " + progress + "% done");
         switch (snapshot.state) {
-          case 'paused':
-            console.log('Upload is paused');
+          case "paused":
+            console.log("Upload is paused");
             break;
-          case 'running':
-            console.log('Upload is running');
+          case "running":
+            console.log("Upload is running");
             break;
           default:
             break;
@@ -77,7 +76,6 @@ const RegistrationForm = () => {
       }
     );
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
