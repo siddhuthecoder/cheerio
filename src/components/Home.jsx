@@ -29,6 +29,7 @@ const Home = () => {
           );
           setUserData(res.data.user);
         } catch (error) {
+          console.log(error);
           setUserError(
             error?.response?.data.message || "Internal Server Error"
           );
