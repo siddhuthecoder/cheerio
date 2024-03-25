@@ -120,7 +120,7 @@ const RegistrationForm = () => {
           className="w-100 d-flex align-items-center bg-dark justify-content-center"
           style={{ height: "100vh" }}
         >
-          <h4 className="text-white">Checking Link.......</h4>
+          <h4 className="text-white">Checking.......</h4>
         </main>
       </>
     );
