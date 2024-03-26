@@ -67,7 +67,7 @@ const Home = () => {
   if (userError) {
     return (
       <main
-        className="w-100 d-flex align-items-center flex-column bg-dark justify-content-center"
+        className="w-100 d-flex align-items-center flex-column justify-content-center"
         style={{ height: "100vh" }}
       >
         <h4 className="text-white">{userError}</h4>

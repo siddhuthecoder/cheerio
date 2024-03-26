@@ -8,6 +8,7 @@ const Lunch = () => {
   const [userStatus, setUserStatus] = useState("idle");
   const [userData, setUserData] = useState(null);
   const [userError, setUserError] = useState(null);
+  const [password, setPassword] = useState("");
 
   const adminState = localStorage.getItem("admin");
   const [admin, setAdmin] = useState(adminState || false);
@@ -30,13 +31,26 @@ const Lunch = () => {
 
       fetchUser();
     }
-  }, [id, userStatus]);
+  }, [id, userStatus, admin]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (password !== process.env.REACT_APP_ADMIN_PASSWORD) {
+      toast.error("Incorrect password");
+    } else {
+      toast.success("Logged In");
+      setAdmin(true);
+      localStorage.setItem("admin", true);
+    }
+  };
 
   useEffect(() => {
     if (userData && !userData.isCompleted) {
       const postLunch = async () => {
         try {
-          await axios.post(`${process.env.REACT_APP_BACKEND_URL}/lunch/${id}`);
+          await axios.post(`${process.env.REACT_APP_BACKEND_URL}/lunch/${id}`, {
+            password: process.env.REACT_APP_ADMIN_PASSWORD,
+          });
           toast.success("Lunch Status Updated");
         } catch (error) {
           toast.error(error?.response?.data.message || "Internal Server Error");
@@ -53,11 +67,24 @@ const Lunch = () => {
         className="w-100 d-flex align-items-center flex-column bg-dark justify-content-center"
         style={{ height: "100vh" }}
       >
-        <form className="" style={{ width: "95%", maxWidth: "320px" }}>
-          <label htmlFor="admin" className="text-white mb-1">
+        <form
+          className="bg-light px-4 py-3 rounded"
+          style={{ width: "95%", maxWidth: "320px" }}
+          onSubmit={handleSubmit}
+        >
+          <label htmlFor="admin" className="text-black mb-1">
             Admin Password
           </label>
-          <input className="form-control" id="admin" />
+          <input
+            className="form-control mb-2"
+            id="admin"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button type="submit" className="btn btn-primary btn-sm">
+            Submit
+          </button>
         </form>
       </main>
     );
