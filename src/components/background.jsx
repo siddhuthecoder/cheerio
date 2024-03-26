@@ -10,7 +10,7 @@ const Background = () => {
             position:"fixed",
             top:"0",
             left:"0",
-            zIndex:"1"
+            zIndex:"11"
         }}>
             <div id="stars"></div>
             <div id="stars2"></div>
