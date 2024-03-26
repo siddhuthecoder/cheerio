@@ -38,6 +38,12 @@ const Home = () => {
     e.preventDefault();
     setLoading(true);
 
+    if (!file.base64) {
+      toast.error("Please Upload a image to proceed");
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/register/${id}`,
@@ -51,7 +57,9 @@ const Home = () => {
       setError("");
       setLoading(false);
     } catch (error) {
-      toast.error(error.message);
+      toast.error(
+        error?.response?.data.message || "Check your internet Connection"
+      );
       setLoading(false);
     }
   };
@@ -63,7 +71,12 @@ const Home = () => {
         style={{ height: "100vh" }}
       >
         <h4 className="text-white">{userError}</h4>
-        <button className="btn btn-primary mt-2">Try Again</button>
+        <button
+          className="btn btn-primary mt-2"
+          onClick={() => window.location.reload()}
+        >
+          Try Again
+        </button>
       </main>
     );
   }
@@ -175,7 +188,13 @@ const Home = () => {
                   </label>
                   <FileBase64
                     multiple={false}
-                    onDone={({ base64 }) => setFile({ base64 })}
+                    onDone={({ base64, file }) => {
+                      if (!file.type.startsWith("image/")) {
+                        toast.error("Please upload only image files.");
+                        return;
+                      }
+                      setFile({ base64 });
+                    }}
                   />
                 </div>
                 {file && (
