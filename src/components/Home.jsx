@@ -189,10 +189,16 @@ const Home = () => {
                   <FileBase64
                     multiple={false}
                     onDone={({ base64, file }) => {
+                      if (file.size > 5 * 1024 * 1024) {
+                        toast.error("File size should be less than 5MB.");
+                        return;
+                      }
+
                       if (!file.type.startsWith("image/")) {
                         toast.error("Please upload only image files.");
                         return;
                       }
+
                       setFile({ base64 });
                     }}
                   />
