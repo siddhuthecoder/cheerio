@@ -9,8 +9,11 @@ const Lunch = () => {
   const [userData, setUserData] = useState(null);
   const [userError, setUserError] = useState(null);
 
+  const adminState = localStorage.getItem("admin");
+  const [admin, setAdmin] = useState(adminState || false);
+
   useEffect(() => {
-    if (id && userStatus === "idle") {
+    if (admin && id && userStatus === "idle") {
       setUserStatus("loaded");
       const fetchUser = async () => {
         try {
@@ -43,6 +46,22 @@ const Lunch = () => {
       postLunch();
     }
   }, [userData, id]);
+
+  if (!admin) {
+    return (
+      <main
+        className="w-100 d-flex align-items-center flex-column bg-dark justify-content-center"
+        style={{ height: "100vh" }}
+      >
+        <form className="" style={{ width: "95%", maxWidth: "320px" }}>
+          <label htmlFor="admin" className="text-white mb-1">
+            Admin Password
+          </label>
+          <input className="form-control" id="admin" />
+        </form>
+      </main>
+    );
+  }
 
   if (userError) {
     return (
