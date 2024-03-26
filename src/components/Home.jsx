@@ -24,8 +24,10 @@ const Home = () => {
       setUserStatus("loaded");
       const fetchUser = async () => {
         try {
-          
+          // `${process.env.REACT_APP_BACKEND_URL}/getId/${id}`
           const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/getId/${id}`);
+
+          // const res = await axios.get(`http://localhost:4001/getId/${id}`);
           setUserData(res.data.user);
         } catch (error) {
           console.log(error);
