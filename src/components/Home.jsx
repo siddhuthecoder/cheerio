@@ -1,14 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { app } from "../firebase.js";
 import { useParams } from "react-router-dom";
-import {
-  getDownloadURL,
-  getStorage,
-  ref as storageRef,
-  uploadBytesResumable,
-} from "firebase/storage";
+import FileBase64 from "react-file-base64";
 
 const Home = () => {
   const [error, setError] = useState("");
@@ -40,43 +34,6 @@ const Home = () => {
     }
   }, [id, userStatus]);
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-    const storage = getStorage(app);
-    const storageReference = storageRef(storage, `files/${file.name}`);
-    const uploadTask = uploadBytesResumable(storageReference, file);
-
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload is " + progress + "% done");
-        switch (snapshot.state) {
-          case "paused":
-            console.log("Upload is paused");
-            break;
-          case "running":
-            console.log("Upload is running");
-            break;
-          default:
-            break;
-        }
-      },
-      (error) => {
-        // Handle unsuccessful uploads
-        console.error("Error uploading file: ", error);
-      },
-      () => {
-        // Handle successful uploads on complete
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setFile(downloadURL);
-        });
-      }
-    );
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -85,12 +42,12 @@ const Home = () => {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/register/${id}`,
         {
-          photo: file,
+          photo: file.base64,
         }
       );
       toast.success(response.data.message);
       setUserData({ ...userData, isReg: true });
-      setFile("");
+      setFile(null);
       setError("");
       setLoading(false);
     } catch (error) {
@@ -216,24 +173,22 @@ const Home = () => {
                   <label htmlFor="" className="form-label">
                     Upload Image
                   </label>
-                  <input
-                    className=" mx-auto mb-2"
-                    style={{ width: "95%" }}
-                    type="file"
-                    onChange={handleFileChange}
+                  <FileBase64
+                    multiple={false}
+                    onDone={({ base64 }) => setFile({ base64 })}
                   />
                 </div>
                 {file && (
                   <img
-                    src={file}
+                    src={file.base64}
                     alt="Preview"
-                    className="mx-auto"
+                    className="mx-auto my-2"
                     style={{ width: "100px", height: "100px" }}
                   />
                 )}
                 <button
                   type="submit"
-                  className="btn btn-primary mx-auto mb-3"
+                  className="btn btn-primary mx-auto my-3"
                   style={{ width: "95%" }}
                 >
                   Register
