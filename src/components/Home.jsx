@@ -38,7 +38,7 @@ const Home = () => {
     e.preventDefault();
     setLoading(true);
 
-    if (!file.base64) {
+    if (!file) {
       toast.error("Please Upload a image to proceed");
       setLoading(false);
       return;
@@ -46,8 +46,11 @@ const Home = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/register/${id}`,
+        `${process.env.REACT_APP_SECOND_BACKEND_URL}/register/${id}`,
         {
+          name: userData.name,
+          idNumber: userData.idNumber,
+          email: userData.email,
           photo: file.base64,
         }
       );
@@ -189,8 +192,8 @@ const Home = () => {
                   <FileBase64
                     multiple={false}
                     onDone={({ base64, file }) => {
-                      if (file.size > 5 * 1024 * 1024) {
-                        toast.error("File size should be less than 5MB.");
+                      if (file.size > 1 * 1024 * 1024) {
+                        toast.error("File size should be less than 1MB.");
                         return;
                       }
 
