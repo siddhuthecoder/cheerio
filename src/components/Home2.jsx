@@ -48,10 +48,8 @@ const Home2 = () => {
       const response = await axios.post(
         `${process.env.REACT_APP_SECOND_BACKEND_URL}/register/update/${id}`,
         {
-          name: userData.name,
-          idNumber: userData.idNumber,
-          email: userData.email,
           photo: file.base64,
+          email: userData.email,
         }
       );
       toast.success(response.data.message);
